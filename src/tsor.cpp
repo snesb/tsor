@@ -6,8 +6,8 @@
 
 
 int main(int argc, char* argv[]) {
-    printf("%s v%s - %s", PROJECT_NAME, PROJECT_VERSION, PROJECT_DESCRIPTION);
-    printf("%s (%s)\n", GIT_COMMIT_HASH, GIT_COMMIT_DATE);
+    printf("%s v%s - %s\n", PROJECT_NAME, PROJECT_VERSION, PROJECT_DESCRIPTION);
+    printf("Built at %s (commit %s)\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
 
     // Parse command line arguments
     cxxopts::ParseResult args = parse_args(argc, argv);

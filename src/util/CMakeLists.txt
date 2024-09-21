@@ -8,7 +8,7 @@ execute_process(
 
 # Get the latest commit date of the working branch
 execute_process(
-  COMMAND git log -1 --format=%cD
+  COMMAND git log -1 --format=%ci
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_DATE
   OUTPUT_STRIP_TRAILING_WHITESPACE
