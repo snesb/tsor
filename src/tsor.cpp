@@ -1,6 +1,4 @@
 #include <fstream>
-#include <iomanip>
-#include <ios>
 #include <iostream>
 
 #include "ts.h"
@@ -41,8 +39,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "Reading packets from \"" << input << "\" (";
-    std::cout << std::setprecision(4) << ((float)size / 1048576) << " MB)\n" << std::endl;
+    std::cout << "Reading packets from \"" << input << "\" (" << size << " bytes)\n" << std::endl;
 
     // Loop through packets in input file
     ts::Packet p;
@@ -51,7 +48,7 @@ int main(int argc, char* argv[]) {
         if(!ifs.read((char*)&p, sizeof(p))) {
             if (errno == 0) {
                 // Handle EOF
-                std::cout << std::endl << "Reached end of file" << std::endl;
+                if (verbose) std::cout << std::endl << "Reached end of file" << std::endl;
                 break;
             }
             else {
@@ -66,7 +63,7 @@ int main(int argc, char* argv[]) {
         if (p.pid == ts::PID::FILL) continue;
 
         // Print packet info
-        std::cout << ts::info(&p) << std::endl;
+        if (verbose) std::cout << ts::info(&p) << std::endl;
     }
 
     // Cleanup 
