@@ -20,7 +20,7 @@ namespace ts {
     #pragma pack(pop)
 
     /**
-     * Map standard table names to PID value
+     * Map standard table names to PID value (ETSI EN 300 468)
      */
     enum PID {
         PAT  = 0x0000,              // Program Association Table
@@ -34,7 +34,10 @@ namespace ts {
         RST  = 0x0013,              // DVB Running Status Table
         TDT  = 0x0014,              // DVB Time and Date Table
         TOT  = 0x0014,              // DVB Time Offset Table
+        NSYN = 0x0015,              // DVB Network Synchronisation
         RNT  = 0x0016,              // DVB Resolution Authority Record (RAR) Notification Table
+        LLIS = 0x001C,              // DVB Link-local Inband Signalling
+        MEAS = 0x001D,              // DVB Measurement
         DIT  = 0x001E,              // DVB Discontinuity Information Table
         SIT  = 0x001F,              // DVB Selection Information Table
         FILL = 0x1FFF               // Null Packet

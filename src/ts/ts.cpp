@@ -11,7 +11,10 @@ namespace ts {
         {PID::EIT,  "EIT"},         // DVB Event Information Table
         {PID::RST,  "RST"},         // DVB Running Status Table
         {PID::TDT,  "TDT/TOT"},     // DVB Time and Date Table or DVB Time Offset Table
+        {PID::NSYN, "NSYN"},        // DVB Network Synchronisation
         {PID::RNT,  "RNT"},         // DVB Resolution Authority Record (RAR) Notification Table
+        {PID::LLIS, "LLIS"},        // DVB Link-local Inband Signalling
+        {PID::MEAS, "MEAS"},        // DVB Measurement
         {PID::DIT,  "DIT"},         // DVB Discontinuity Information Table
         {PID::SIT,  "SIT"},         // DVB Selection Information Table
         {PID::FILL, "FILL"}         // Null Packet
