@@ -17,6 +17,9 @@ namespace ts {
             ""
         };
 
+        // Copy payload into struct memory
+        std::memcpy(packet.data, &bytes[4], 184);
+
         return packet;
     }
 
