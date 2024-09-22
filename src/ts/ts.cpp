@@ -23,9 +23,28 @@ namespace ts {
     std::string info(Packet* p) {
         std::stringstream s;
 
+        // Continuity Counter
+        s << std::uppercase << std::hex << p->cont << " ";
+
         // Packet Identifier
-        s << "PID: 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << p->pid;
-        if (PIDMap.find(p->pid) != PIDMap.end()) s << " (" << PIDMap[p->pid] << ")";
+        s << "0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << p->pid << " ";
+        if (PIDMap.find(p->pid) != PIDMap.end())
+            s << std::setfill(' ') << std::setw(8) << std::left << PIDMap[p->pid];
+        else
+            s << std::setfill(' ') << std::setw(8) << " ";
+
+        // Packet Flags
+        if (p->tei || p->pusi || p->pri) {
+            s << (p->tei ? "TEI " : "");
+            s << (p->pusi ? "PUSI " : "" );
+            s << (p->pri ? "PRI" : "");
+        }
+
+        // Transport Scrambling Control
+        if (p->tsc == 2 || p->tsc == 3) s << "TSC ";
+
+        // Adaptation Field Control
+        if (p->afc == 2 || p->afc == 3) s << "AFC ";
 
         return s.str();
     }
