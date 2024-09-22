@@ -66,9 +66,7 @@ int main(int argc, char* argv[]) {
         if (p.pid == ts::PID::FILL) continue;
 
         // Print packet info
-        std::cout << " PID: " << p.pid;
-        if (ts::PIDMap.find(p.pid) != ts::PIDMap.end()) std::cout << " (" << ts::PIDMap[p.pid] << ")";
-        std::cout << std::endl;
+        std::cout << ts::info(&p) << std::endl;
     }
 
     // Cleanup 

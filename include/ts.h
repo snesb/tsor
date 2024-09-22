@@ -1,31 +1,15 @@
 #pragma once
 #include <map>
+#include <string>
 
 /**
  * MPEG Transport Stream with DVB Extensions (ETSI EN 300 468)
  */
 namespace ts {
-    #pragma pack(push, 1)
-    /**
-     * Packed struct representing MPEG-TS packet header
-     */
-    struct Packet {
-        unsigned int    sync:   8;
-        bool            tei:    1;
-        bool            pusi:   1;
-        bool            pri:    1;
-        unsigned int    pid:    13;
-        unsigned int    tsc:    2;
-        unsigned int    afc:    2;
-        unsigned int    cont:   4;
-        unsigned char   data[184];
-    };
-    #pragma pack(pop)
-
     /**
      * Map standard table names to PID value
      */
-    enum PID {
+    enum PID : unsigned int {
         PAT  = 0x0000,              // Program Association Table
         CAT  = 0x0001,              // Conditional Access Table
         TSDT = 0x0002,              // Transport Stream Description Table
@@ -67,4 +51,26 @@ namespace ts {
         {PID::SIT,  "SIT"},         // DVB Selection Information Table
         {PID::FILL, "FILL"}         // Null Packet
     };
+
+    #pragma pack(push, 1)
+    /**
+     * Packed struct representing MPEG-TS packet header
+     */
+    struct Packet {
+        unsigned int    sync:   8;      // Synchronisation Byte (0x47, "G")
+        bool            tei:    1;      // Transport Error Indicator Flag
+        bool            pusi:   1;      // Payload Unit Start Indicator Flag
+        bool            pri:    1;      // Transport Priority Flag
+        PID             pid:    13;     // Packet Identifier
+        unsigned int    tsc:    2;      // Transport Scrambling Control
+        unsigned int    afc:    2;      // Adaptation Field Control
+        unsigned int    cont:   4;      // Continuity Counter
+        unsigned char   data[184];      // Payload data
+    };
+    #pragma pack(pop)
+
+    /**
+     * Print packet information
+     */
+    std::string info(Packet* p);
 }
