@@ -44,25 +44,34 @@ int main(int argc, char* argv[]) {
     std::cout << "Reading packets from \"" << input << "\" (";
     std::cout << std::setprecision(4) << ((float)size / 1048576) << " MB)\n" << std::endl;
 
-    // Read bytes from file
-    char buf[188];
+    // Loop through packets in input file
+    ts::Packet p;
     while (!ifs.eof()) {
-        if(!ifs.read((char*)&buf, sizeof(buf))) {
+        // Read bytes into ts::Packet struct
+        if(!ifs.read((char*)&p, sizeof(p))) {
             if (errno == 0) {
-                std::cout << input << ": Reached end of file" << std::endl;
+                // Handle EOF
+                std::cout << std::endl << "Reached end of file" << std::endl;
                 break;
             }
             else {
+                // Exit on file read error
                 std::cout << input << ": " << std::strerror(errno) << std::endl;
                 ifs.close();
                 return 1;
             }
         }
 
-        printf("0x%X\n", buf[1]);
+        // Skip null packets
+        if (p.pid == ts::PID::FILL) continue;
+
+        // Print packet info
+        std::cout << " PID: " << p.pid;
+        if (ts::PIDMap.find(p.pid) != ts::PIDMap.end()) std::cout << " (" << ts::PIDMap[p.pid] << ")";
+        std::cout << std::endl;
     }
 
-    // Cleanup
+    // Cleanup 
     ifs.close();
 
     return 0;
