@@ -44,6 +44,4 @@ namespace ts {
      * Map standard PID values to abbreviated table name
      */
     extern std::map<unsigned int,const char*> PIDMap;
-
-    Packet packet_test();
 }

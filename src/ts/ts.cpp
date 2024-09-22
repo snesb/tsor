@@ -16,9 +16,4 @@ namespace ts {
         {PID::SIT,  "SIT"},         // DVB Selection Information Table
         {PID::FILL, "FILL"}         // Null Packet
     };
-
-    Packet packet_test() {
-        Packet p = { 0x47, false, false, false, 0x1FFF, 1, 1, 4, 0};
-        return p;
-    }
 }
