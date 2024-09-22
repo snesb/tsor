@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "m2ts.h"
+#include "ts.h"
 #include "util/options.h"
 #include "util/version.h"
 
@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
     else {
         printf("\nReading packets from \"%s\"\n", input.c_str());
 
-        Packet p = packet_test();
-        std::cout << "PID: " << M2TS_PID[p.pid] << std::endl;
+        ts::Packet p = ts::packet_test();
+        std::cout << "PID: " << ts::PIDMap[p.pid] << std::endl;
     }
 
     return 0;
