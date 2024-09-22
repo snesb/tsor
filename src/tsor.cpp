@@ -59,6 +59,12 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Check sync byte is present
+        if (buf[0] != 0x47) {
+            std::cout << "ERROR: Missing sync byte (0x47)" << std::endl;
+            continue;
+        }
+
         // Parse bytes into struct
         packet = ts::read(buf);
 
