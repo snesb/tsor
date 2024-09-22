@@ -21,6 +21,9 @@ int main(int argc, char* argv[]) {
     }
     else {
         printf("\nReading packets from \"%s\"\n", input.c_str());
+
+        Packet p = packet_test();
+        std::cout << "PID: " << M2TS_PID[p.pid] << std::endl;
     }
 
     return 0;
