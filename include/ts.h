@@ -52,22 +52,25 @@ namespace ts {
         {PID::FILL, "FILL"}         // Null Packet
     };
 
-    #pragma pack(push, 1)
     /**
-     * Packed struct representing MPEG-TS packet header
+     * Struct representing MPEG-TS packet header
      */
     struct Packet {
-        unsigned int    sync:   8;      // Synchronisation Byte (0x47, "G")
-        bool            tei:    1;      // Transport Error Indicator Flag
-        bool            pusi:   1;      // Payload Unit Start Indicator Flag
-        bool            pri:    1;      // Transport Priority Flag
-        PID             pid:    13;     // Packet Identifier
-        unsigned int    tsc:    2;      // Transport Scrambling Control
-        unsigned int    afc:    2;      // Adaptation Field Control
-        unsigned int    cont:   4;      // Continuity Counter
-        unsigned char   data[184];      // Payload data
+        char            sync;       // Synchronisation Byte (0x47, "G")
+        bool            tei;        // Transport Error Indicator Flag
+        bool            pusi;       // Payload Unit Start Indicator Flag
+        bool            pri;        // Transport Priority Flag
+        unsigned int    pid;        // Packet Identifier
+        unsigned int    tsc;        // Transport Scrambling Control
+        unsigned int    afc;        // Adaptation Field Control
+        unsigned int    cont;       // Continuity Counter
+        unsigned char   data[184];  // Payload data
     };
-    #pragma pack(pop)
+
+    /**
+     * Parse bytes into Packet struct
+     */
+    Packet read(char* bytes);
 
     /**
      * Print packet information

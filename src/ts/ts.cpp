@@ -1,8 +1,25 @@
 #include <iomanip>
+#include <cstring>
 
 #include "ts.h"
 
 namespace ts {
+    Packet read(char* bytes) {
+        Packet packet {
+            bytes[0],                                                           // Synchronisation Byte (0x47, "G")
+            static_cast<bool>((bytes[1] & 0x80) >> 7),                          // Transport Error Indicator Flag
+            static_cast<bool>((bytes[1] & 0x40) >> 6),                          // Payload Unit Start Indicator Flag
+            static_cast<bool>((bytes[1] & 0x20) >> 5),                          // Transport Priority Flag
+            static_cast<unsigned int>(((bytes[1] << 8) | bytes[2]) & 0x1FFF),   // Packet Identifier
+            static_cast<unsigned int>((bytes[3] & 0xC0) >> 6),                  // Transport Scrambling Control
+            static_cast<unsigned int>((bytes[3] & 0x30) >> 4),                  // Adaptation Field Control
+            static_cast<unsigned int>((bytes[3] & 0x0F)),                       // Continuity Counter
+            ""
+        };
+
+        return packet;
+    }
+
     std::string info(Packet* p) {
         std::stringstream s;
 

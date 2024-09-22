@@ -42,12 +42,12 @@ int main(int argc, char* argv[]) {
     std::cout << "Reading packets from \"" << input << "\" (" << size << " bytes)\n" << std::endl;
 
     // Loop through packets in input file
-    ts::Packet p;
+    char buf[188];
+    ts::Packet packet;
     while (!ifs.eof()) {
-        // Read bytes into ts::Packet struct
-        if(!ifs.read((char*)&p, sizeof(p))) {
+        // Read bytes into Packet struct
+        if(!ifs.read(buf, sizeof(buf))) {
             if (errno == 0) {
-                // Handle EOF
                 if (verbose) std::cout << std::endl << "Reached end of file" << std::endl;
                 break;
             }
@@ -59,11 +59,14 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Parse bytes into struct
+        packet = ts::read(buf);
+
         // Skip null packets
-        if (p.pid == ts::PID::FILL) continue;
+        if (packet.pid == ts::PID::FILL) continue;
 
         // Print packet info
-        if (verbose) std::cout << ts::info(&p) << std::endl;
+        if (verbose) std::cout << ts::info(&packet) << std::endl;
     }
 
     // Cleanup 
