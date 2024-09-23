@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "gui.h"
 #include "ts.h"
 #include "util/options.h"
 #include "util/version.h"
@@ -42,6 +43,11 @@ namespace tsor {
             return 1;
         }
 
+        // Setup GUI
+        if (args.count("gui"))
+            if(!gui::setup(1280, 720))
+                std::cout << "Failed to start GUI" << std::endl;
+
         std::cout << "Reading packets from \"" << input << "\" (" << std::dec << size << " bytes)" << std::endl;
 
         // Setup PID filtering
@@ -60,16 +66,14 @@ namespace tsor {
         while (!ifs.eof()) {
             // Read bytes into Packet struct
             if(!ifs.read(buf, sizeof(buf))) {
-                if (errno == 0) {
-                    if (verbose) std::cout << std::endl << "Reached end of file" << std::endl;
-                    break;
+                if (errno == 0 || errno == 11) { // EOF or Resource Temporarily Unavailable
+                    if (verbose) std::cout << std::endl << "Reached end of file \"" << input << "\"" << std::endl;
                 }
                 else {
-                    // Exit on file read error
-                    std::cout << input << ": " << std::strerror(errno) << std::endl;
-                    ifs.close();
-                    return 1;
+                    std::cout << input << ": " << std::strerror(errno) << " (" << std::dec << errno << ")"<< std::endl;
                 }
+                ifs.close();
+                break;
             }
 
             // Check sync byte is present
@@ -112,10 +116,19 @@ namespace tsor {
                 default:
                     break;
             }
+
+            // Update GUI
+            if (gui::window != nullptr) gui::update();
         }
 
-        // Cleanup file handler
-        ifs.close();
+        // Kepe updating GUI after EOF
+        if (args.count("gui")) {
+            // Enable vertical sync (reduce CPU usage)
+            glfwSwapInterval(1);
+
+            while (!glfwWindowShouldClose(gui::window)) gui::update();
+            gui::cleanup();
+        }
 
         return 0;
     }
