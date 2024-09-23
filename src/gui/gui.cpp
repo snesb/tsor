@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "gui.h"
 #include "../util/version.h"
@@ -8,12 +9,15 @@ namespace tsor::gui
     GLFWwindow* window;
     ImGuiIO* io;
 
+    static bool verbose;
+    static std::vector<float> fps(100, 0);
+
     static void glfw_error_callback(int error, const char* description)
     {
         std::cerr << "GLFW Error " << error << ": " << description << std::endl;
     }
 
-    bool setup(int width, int height)
+    bool setup(int width, int height, bool verbose)
     {
         // Initialise glfw
         glfwSetErrorCallback(glfw_error_callback);
@@ -46,6 +50,7 @@ namespace tsor::gui
         io = &ImGui::GetIO(); (void)io;
         io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         ImGui::StyleColorsDark();
+        tsor::gui::verbose = verbose;
 
         // Setup platform/renderer backends
         ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -69,8 +74,39 @@ namespace tsor::gui
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // Main Menu Bar
+        ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit")) exit(0);
+			ImGui::EndMenu();
+		}
+        ImGui::EndMainMenuBar();
+
+        // Main Window
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - ImGui::GetFrameHeight()), ImGuiCond_FirstUseEver);
+        ImGui::Begin(PROJECT_NAME, NULL, parent_window_flags);
+
         // Draw UI elements
         draw();
+
+        ImGui::End(); // Main Window
+
+        // Render Statistics
+        if (verbose)
+        {
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_FirstUseEver);
+            ImGui::Begin("Render Statistics", NULL, child_window_flags);
+                if (fps.size() == 100) fps.erase(fps.begin());
+                fps.insert(fps.end(), io->Framerate);
+
+                ImGui::Text("%.1f FPS (%.3f ms)", io->Framerate, 1000.0f / io->Framerate);
+                ImGui::PlotLines("##FPS", fps.data(), 100, 0, "", 0.0f, 60.0f, ImVec2(230, 20));
+            ImGui::End(); // Render Statistics
+        }
 
         // Render frame
         ImGui::Render();
@@ -87,7 +123,7 @@ namespace tsor::gui
 
     void draw()
     {
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+        //ImGui::ShowDemoWindow();
     }
 
     void cleanup()

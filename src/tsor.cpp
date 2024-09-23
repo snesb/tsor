@@ -50,7 +50,7 @@ namespace tsor
 
         // Setup GUI
         if (args.count("gui"))
-            if(!gui::setup(1280, 720))
+            if(!gui::setup(1280, 720, verbose))
                 std::cout << "Failed to start GUI" << std::endl;
 
         std::cout << "Reading packets from \"" << input << "\" (" << std::dec << size << " bytes)" << std::endl;
