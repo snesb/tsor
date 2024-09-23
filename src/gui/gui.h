@@ -19,7 +19,7 @@ namespace tsor::gui
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoBackground |
         ImGuiWindowFlags_NoBringToFrontOnFocus;
-        
+
     const ImGuiWindowFlags child_window_flags = 
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoResize |

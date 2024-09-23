@@ -97,8 +97,8 @@ namespace tsor::gui
         // Render Statistics
         if (verbose)
         {
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowPos(ImVec2(viewport->Size.x - 250, viewport->Size.y - 75));
+            ImGui::SetNextWindowSize(ImVec2(250, 75), ImGuiCond_FirstUseEver);
             ImGui::Begin("Render Statistics", NULL, child_window_flags);
                 if (fps.size() == 100) fps.erase(fps.begin());
                 fps.insert(fps.end(), io->Framerate);
