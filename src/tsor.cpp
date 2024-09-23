@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 #include "ts.h"
@@ -13,6 +15,7 @@ int main(int argc, char* argv[]) {
     // Parse command line arguments
     cxxopts::ParseResult args = parse_args(argc, argv);
     std::string input = args["input"].as<std::string>();
+    std::vector<uint16_t> filter;
     bool verbose = args["verbose"].as<bool>();
 
     // Check input file extension
@@ -39,7 +42,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "Reading packets from \"" << input << "\" (" << size << " bytes)\n" << std::endl;
+    std::cout << "Reading packets from \"" << input << "\" (" << std::dec << size << " bytes)" << std::endl;
+
+    // Setup PID filtering
+    if (args.count("filter")) filter = parse_filter(&args["filter"], args["verbose"].as<bool>());
+    if (filter.size() != 0) {
+        std::cout << "Filtering all PIDs except:";
+        for (auto pid : filter)
+            std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
     // Loop through packets in input file
     char buf[188];
@@ -70,6 +83,11 @@ int main(int argc, char* argv[]) {
 
         // Skip null or corrupt packets
         if (packet.pid == ts::PID::FILL || packet.tei) continue;
+
+        // Skip packets not in filter list
+        if (!filter.empty())
+            if (std::find(filter.begin(), filter.end(), packet.pid) == filter.end())
+                continue;
 
         // Print packet info
         if (verbose) std::cout << ts::info(&packet) << std::endl;
