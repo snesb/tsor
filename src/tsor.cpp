@@ -68,14 +68,35 @@ int main(int argc, char* argv[]) {
         // Parse bytes into struct
         packet = ts::read(buf);
 
-        // Skip null packets
-        if (packet.pid == ts::PID::FILL) continue;
+        // Skip null or corrupt packets
+        if (packet.pid == ts::PID::FILL || packet.tei) continue;
 
         // Print packet info
         if (verbose) std::cout << ts::info(&packet) << std::endl;
+
+        // Parse payload by PID
+        switch (packet.pid) {
+            case ts::PID::PAT:
+            case ts::PID::CAT:
+            case ts::PID::NIT:
+            case ts::PID::SDT:
+            case ts::PID::TSDT:
+            case ts::PID::IPMP:
+            case ts::PID::EIT:  // or BAT
+            case ts::PID::RST:
+            case ts::PID::TDT:  // or TOT
+            case ts::PID::NSYN:
+            case ts::PID::RNT:
+            case ts::PID::LLIS:
+            case ts::PID::MEAS:
+            case ts::PID::DIT:
+            case ts::PID::SIT:
+            default:
+                break;
+        }
     }
 
-    // Cleanup 
+    // Cleanup file handler
     ifs.close();
 
     return 0;
