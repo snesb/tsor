@@ -33,6 +33,7 @@
 
 # Libraries
 lib/*
+!lib/imgui
 
 # Build files
 build/*

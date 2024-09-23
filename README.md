@@ -3,11 +3,12 @@
 MPEG Transport Stream Inspector
 
 ```bash
+git clone --recurse-submodules https://github.com/snesb/tsor
 sudo apt install libcxxopts-dev
 cd tsor
 mkdir build
 cd build
 cmake ..
-make
+make -j4
 ./tsor --help
 ```
