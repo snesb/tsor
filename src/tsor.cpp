@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "gui.h"
+#include "gui/gui.h"
 #include "ts.h"
 #include "util/options.h"
 #include "util/version.h"
