@@ -10,7 +10,7 @@ namespace ts {
     /**
      * Map standard table names to PID value
      */
-    enum PID : uint16_t {
+    enum PID : uint {
         PAT  = 0x0000,              // Program Association Table
         CAT  = 0x0001,              // Conditional Access Table
         TSDT = 0x0002,              // Transport Stream Description Table
@@ -34,7 +34,7 @@ namespace ts {
     /**
      * Map standard PID values to abbreviated table name
      */
-    static std::map<uint16_t,const char*> PIDMap = {
+    static std::map<uint,const char*> PIDMap = {
         {PID::PAT,  "PAT"},         // Program Association Table
         {PID::CAT,  "CAT"},         // Conditional Access Table
         {PID::TSDT, "TSDT"},        // Transport Stream Description Table
@@ -57,15 +57,15 @@ namespace ts {
      * Struct representing MPEG-TS packet header
      */
     struct Packet {
-        char            sync;       // Synchronisation Byte (0x47, "G")
-        bool            tei;        // Transport Error Indicator Flag
-        bool            pusi;       // Payload Unit Start Indicator Flag
-        bool            pri;        // Transport Priority Flag
-        uint16_t        pid;        // Packet Identifier
-        unsigned int    tsc;        // Transport Scrambling Control
-        unsigned int    afc;        // Adaptation Field Control
-        unsigned int    cont;       // Continuity Counter
-        unsigned char   data[184];  // Payload data
+        uint8_t sync;       // Synchronisation Byte (0x47, "G")
+        bool    tei;        // Transport Error Indicator Flag
+        bool    pusi;       // Payload Unit Start Indicator Flag
+        bool    pri;        // Transport Priority Flag
+        uint    pid;        // Packet Identifier
+        uint    tsc;        // Transport Scrambling Control
+        uint    afc;        // Adaptation Field Control
+        uint    cont;       // Continuity Counter
+        uint8_t data[184];  // Payload data
     };
 
     /**

@@ -9,10 +9,10 @@ namespace tsor {
     /**
      * Create vector of PIDs from hex string list
      */
-    std::vector<uint16_t> parse_filter(const cxxopts::OptionValue* filter, bool verbose);
+    std::vector<uint> parse_filter(const cxxopts::OptionValue* filter, bool verbose);
 
     /**
      * Add hex string to vector as integer, handling out-of-range exceptions
      */
-    bool add_filter_pid(std::vector<uint16_t>* v, std::string s);
+    bool add_filter_pid(std::vector<uint>* v, std::string s);
 } // namespace tsor

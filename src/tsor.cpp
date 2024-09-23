@@ -15,7 +15,7 @@ namespace tsor {
         // Parse command line arguments
         cxxopts::ParseResult args = parse_args(argc, argv);
         std::string input = args["input"].as<std::string>();
-        std::vector<uint16_t> filter;
+        std::vector<uint> filter;
         bool verbose = args["verbose"].as<bool>();
 
         // Check input file extension

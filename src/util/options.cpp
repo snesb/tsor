@@ -31,9 +31,9 @@ namespace tsor {
         }
     }
 
-    std::vector<uint16_t> parse_filter(const cxxopts::OptionValue* filter, bool verbose) {
+    std::vector<uint> parse_filter(const cxxopts::OptionValue* filter, bool verbose) {
         auto list = filter->as<std::string>();
-        std::vector<uint16_t> pids = {};
+        std::vector<uint> pids = {};
         size_t start = 0, end;
         std::string token;
 
@@ -55,13 +55,13 @@ namespace tsor {
         return pids;
     }
 
-    bool add_filter_pid(std::vector<uint16_t>* v, std::string s) {
+    bool add_filter_pid(std::vector<uint>* v, std::string s) {
         // Basic input validation
         if (s.length() == 0 || s.find(" ", 0) != std::string::npos) return false;
 
         try {
             // Convert hex string to int
-            uint16_t pid = std::stoi(s, 0, 16);
+            uint pid = std::stoi(s, 0, 16);
 
             // Maximum possible PID value (13 bits)
             if (pid > 0x1FFF) throw std::out_of_range("Must be less than 0x1FFF");
