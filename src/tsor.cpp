@@ -8,8 +8,10 @@
 #include "util/options.h"
 #include "util/version.h"
 
-namespace tsor {
-    int run(int argc, char* argv[]) {
+namespace tsor
+{
+    int run(int argc, char* argv[])
+    {
         printf("%s v%s - %s\n", PROJECT_NAME, PROJECT_VERSION, PROJECT_DESCRIPTION);
         printf("Built at %s (commit %s)\n\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
 
@@ -17,10 +19,11 @@ namespace tsor {
         cxxopts::ParseResult args = parse_args(argc, argv);
         std::string input = args["input"].as<std::string>();
         std::vector<uint> filter;
-        bool verbose = args["verbose"].as<bool>();
+        const bool verbose = args["verbose"].as<bool>();
 
         // Check input file extension
-        if (input.substr(input.length() - 3) != ".ts") {
+        if (input.substr(input.length() - 3) != ".ts")
+        {
             std::cout << input << ": Expecting a \".ts\" file" << std::endl;
             return 1;
         }
@@ -28,7 +31,8 @@ namespace tsor {
         // Open input file (checking if it exists)
         std::ifstream ifs(input, std::ios::binary);
         ifs.unsetf(std::ios::skipws);
-        if(!ifs) {
+        if(!ifs)
+        {
             std::cout << input << ": " << std::strerror(errno) << std::endl;
             return 1;
         }
@@ -37,7 +41,8 @@ namespace tsor {
         ifs.seekg(0, std::ios::end);
         std::streampos size = ifs.tellg();
         ifs.seekg(0, std::ios::beg);
-        if(size == 0) {
+        if(size == 0)
+        {
             std::cout << input << ": File is empty" << std::endl;
             ifs.close();
             return 1;
@@ -52,7 +57,8 @@ namespace tsor {
 
         // Setup PID filtering
         if (args.count("filter")) filter = parse_filter(&args["filter"], args["verbose"].as<bool>());
-        if (filter.size() != 0) {
+        if (filter.size() != 0)
+        {
             std::cout << "Filtering all PIDs except:";
             for (auto pid : filter)
                 std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
@@ -63,9 +69,11 @@ namespace tsor {
         // Loop through packets in input file
         char buf[188];
         ts::Packet packet;
-        while (!ifs.eof()) {
+        while (!ifs.eof())
+        {
             // Read bytes into Packet struct
-            if(!ifs.read(buf, sizeof(buf))) {
+            if(!ifs.read(buf, sizeof(buf)))
+            {
                 if (errno == 0 || errno == 11) { // EOF or Resource Temporarily Unavailable
                     if (verbose) std::cout << std::endl << "Reached end of file \"" << input << "\"" << std::endl;
                 }
@@ -77,7 +85,8 @@ namespace tsor {
             }
 
             // Check sync byte is present
-            if (buf[0] != 0x47) {
+            if (buf[0] != 0x47)
+            {
                 std::cout << "ERROR: Missing sync byte (0x47)" << std::endl;
                 continue;
             }
@@ -97,7 +106,8 @@ namespace tsor {
             if (verbose) std::cout << ts::info(&packet) << std::endl;
 
             // Parse payload by PID
-            switch (packet.pid) {
+            switch (packet.pid)
+            {
                 case ts::PID::PAT:
                 case ts::PID::CAT:
                 case ts::PID::NIT:
@@ -122,7 +132,8 @@ namespace tsor {
         }
 
         // Kepe updating GUI after EOF
-        if (args.count("gui")) {
+        if (args.count("gui"))
+        {
             // Enable vertical sync (reduce CPU usage)
             glfwSwapInterval(1);
 
@@ -134,4 +145,7 @@ namespace tsor {
     }
 } // namespace tsor
 
-int main(int argc, char* argv[]) { return tsor::run(argc, argv); }
+int main(int argc, char* argv[])
+{
+    return tsor::run(argc, argv);
+}

@@ -3,9 +3,12 @@
 
 #include "ts.h"
 
-namespace ts {
-    Packet read(char* bytes) {
-        Packet packet {
+namespace ts
+{
+    Packet read(char* bytes)
+    {
+        Packet packet
+        {
             static_cast<uint8_t>(bytes[0]),                             // Synchronisation Byte (0x47, "G")
             static_cast<bool>((bytes[1] & 0x80) >> 7),                  // Transport Error Indicator Flag
             static_cast<bool>((bytes[1] & 0x40) >> 6),                  // Payload Unit Start Indicator Flag
@@ -23,7 +26,8 @@ namespace ts {
         return packet;
     }
 
-    std::string info(Packet* p) {
+    std::string info(Packet* p)
+    {
         std::stringstream s;
 
         // Continuity Counter
@@ -37,11 +41,9 @@ namespace ts {
             s << std::setfill(' ') << std::setw(8) << " ";
 
         // Packet Flags
-        if (p->tei || p->pusi || p->pri) {
-            s << (p->tei ? "TEI " : "");
-            s << (p->pusi ? "PUSI " : "" );
-            s << (p->pri ? "PRI" : "");
-        }
+        s << (p->tei ? "TEI " : "");
+        s << (p->pusi ? "PUSI " : "" );
+        s << (p->pri ? "PRI" : "");
 
         // Transport Scrambling Control
         if (p->tsc == 2 || p->tsc == 3) s << "TSC ";
