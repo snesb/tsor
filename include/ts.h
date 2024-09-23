@@ -77,4 +77,4 @@ namespace ts {
      * Print packet information
      */
     std::string info(Packet* p);
-}
+} // namespace ts

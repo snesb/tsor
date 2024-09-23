@@ -51,4 +51,4 @@ namespace ts {
 
         return s.str();
     }
-}
+} // namespace ts
