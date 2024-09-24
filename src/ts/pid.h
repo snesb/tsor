@@ -1,11 +1,7 @@
 #pragma once
 #include <map>
 #include <stdint.h>
-#include <string>
 
-/**
- * MPEG Transport Stream with DVB Extensions (ETSI EN 300 468)
- */
 namespace ts
 {
     /**
@@ -55,30 +51,4 @@ namespace ts
         {PID::SIT,  "SIT"},         // DVB Selection Information Table
         {PID::FILL, "FILL"}         // Null Packet
     };
-
-    /**
-     * Struct representing MPEG-TS packet header
-     */
-    struct Packet
-    {
-        uint8_t sync;       // Synchronisation Byte (0x47, "G")
-        bool    tei;        // Transport Error Indicator Flag
-        bool    pusi;       // Payload Unit Start Indicator Flag
-        bool    pri;        // Transport Priority Flag
-        uint    pid;        // Packet Identifier
-        uint    tsc;        // Transport Scrambling Control
-        uint    afc;        // Adaptation Field Control
-        uint    cont;       // Continuity Counter
-        uint8_t data[184];  // Payload data
-    };
-
-    /**
-     * Parse bytes into Packet struct
-     */
-    Packet read(char* bytes);
-
-    /**
-     * Print packet information
-     */
-    std::string info(Packet* p);
 } // namespace ts
