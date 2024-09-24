@@ -26,19 +26,14 @@ namespace tsor::gui
         ImGuiWindowFlags_NoCollapse;
 
     /**
-     * Setup ImGui and GLFW/OpenGL
-     */
-    bool setup(int width, int height, bool verbose);
-
-    /**
      * Update GUI frame buffer
      */
     void update();
 
     /**
-     * Draw GUI controls
+     * Setup ImGui and GLFW/OpenGL
      */
-    void draw();
+    bool setup(int width, int height, bool verbose);
 
     /**
      * Cleanup GUI resources

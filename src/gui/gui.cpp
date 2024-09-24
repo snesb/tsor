@@ -12,6 +12,90 @@ namespace tsor::gui
     static bool verbose;
     static std::vector<float> fps(100, 0);
 
+    /**
+     * Draw UI elements
+     */
+    static void draw(const ImGuiViewport* viewport)
+    {
+        // Layout Table
+        ImGui::BeginTable("Layout Table", 2);
+
+        // Packet Identifier List
+        ImGui::SeparatorText("PID List");
+        {
+            ImGui::BeginChild("PID List Window", ImVec2(200, 0), ImGuiChildFlags_Borders, ImGuiWindowFlags_None);
+                for (int i = 0; i < 100; i++)
+                    ImGui::Text("0x%04X", i);
+            ImGui::EndChild();
+        }
+
+        ImGui::EndTable();
+
+        ImGui::ShowDemoWindow();
+    }
+
+    void update()
+    {
+        // Handle window events
+        glfwPollEvents();
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
+        {
+            ImGui_ImplGlfw_Sleep(10);
+            return;
+        }
+
+        // Start new frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // Main Menu Bar
+        ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Exit")) exit(0);
+			ImGui::EndMenu();
+		}
+        ImGui::EndMainMenuBar();
+
+        // Main Window
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - ImGui::GetFrameHeight()), ImGuiCond_FirstUseEver);
+        ImGui::Begin(PROJECT_NAME, NULL, parent_window_flags);
+
+        // Draw UI elements
+        draw(viewport);
+
+        ImGui::End(); // Main Window
+
+        // Render Statistics
+        if (verbose)
+        {
+            ImGui::SetNextWindowPos(ImVec2(viewport->Size.x - 250, viewport->Size.y - 75));
+            ImGui::SetNextWindowSize(ImVec2(250, 75), ImGuiCond_FirstUseEver);
+            ImGui::Begin("Render Statistics", NULL, child_window_flags);
+                if (fps.size() == 100) fps.erase(fps.begin());
+                fps.insert(fps.end(), io->Framerate);
+
+                ImGui::Text("%.1f FPS (%.3f ms)", io->Framerate, 1000.0f / io->Framerate);
+                ImGui::PlotLines("##FPS", fps.data(), 100, 0, "", 0.0f, 60.0f, ImVec2(230, 20));
+            ImGui::End(); // Render Statistics
+        }
+
+        // Render frame
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Swap front/back frame buffers
+        glfwSwapBuffers(window);
+    }
+
     static void glfw_error_callback(int error, const char* description)
     {
         std::cerr << "GLFW Error " << error << ": " << description << std::endl;
@@ -57,73 +141,6 @@ namespace tsor::gui
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         return true;
-    }
-
-    void update()
-    {
-        // Handle window events
-        glfwPollEvents();
-        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
-        {
-            ImGui_ImplGlfw_Sleep(10);
-            return;
-        }
-
-        // Start new frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // Main Menu Bar
-        ImGui::BeginMainMenuBar();
-        if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Exit")) exit(0);
-			ImGui::EndMenu();
-		}
-        ImGui::EndMainMenuBar();
-
-        // Main Window
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - ImGui::GetFrameHeight()), ImGuiCond_FirstUseEver);
-        ImGui::Begin(PROJECT_NAME, NULL, parent_window_flags);
-
-        // Draw UI elements
-        draw();
-
-        ImGui::End(); // Main Window
-
-        // Render Statistics
-        if (verbose)
-        {
-            ImGui::SetNextWindowPos(ImVec2(viewport->Size.x - 250, viewport->Size.y - 75));
-            ImGui::SetNextWindowSize(ImVec2(250, 75), ImGuiCond_FirstUseEver);
-            ImGui::Begin("Render Statistics", NULL, child_window_flags);
-                if (fps.size() == 100) fps.erase(fps.begin());
-                fps.insert(fps.end(), io->Framerate);
-
-                ImGui::Text("%.1f FPS (%.3f ms)", io->Framerate, 1000.0f / io->Framerate);
-                ImGui::PlotLines("##FPS", fps.data(), 100, 0, "", 0.0f, 60.0f, ImVec2(230, 20));
-            ImGui::End(); // Render Statistics
-        }
-
-        // Render frame
-        ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        // Swap front/back frame buffers
-        glfwSwapBuffers(window);
-    }
-
-    void draw()
-    {
-        //ImGui::ShowDemoWindow();
     }
 
     void cleanup()
