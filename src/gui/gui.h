@@ -10,21 +10,6 @@ namespace tsor::gui
     extern GLFWwindow* window;
     extern ImGuiIO* io;
 
-    const ImGuiWindowFlags parent_window_flags = 
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_MenuBar |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoBackground |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    const ImGuiWindowFlags child_window_flags = 
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoCollapse;
-
     /**
      * Update GUI frame buffer
      */

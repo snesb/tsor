@@ -11,6 +11,20 @@ namespace tsor::gui
 
     static bool verbose;
     static std::vector<float> fps(100, 0);
+    static const ImGuiWindowFlags parent_window_flags = 
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+    static const ImGuiWindowFlags child_window_flags = 
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoCollapse;
 
     /**
      * Draw UI elements
