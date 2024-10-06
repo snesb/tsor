@@ -2,3 +2,7 @@
 	path = lib/imgui
 	url = https://github.com/ocornut/imgui
 	branch = master
+[submodule "lib/cxxopts"]
+	path = lib/cxxopts
+	url = https://github.com/jarro2783/cxxopts
+	branch = master

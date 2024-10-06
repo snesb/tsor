@@ -11,7 +11,7 @@ namespace tsor {
             options.add_options()
                 ("i,input", "Input file", cxxopts::value<std::string>())
                 ("filter", "List of PIDs to process (e.g. 11,1210,2A0,3FF)", cxxopts::value<std::string>())
-                ("gui", "show graphical user interface", cxxopts::value<bool>()->default_value("false"))
+                ("gui", "Show graphical user interface", cxxopts::value<bool>()->default_value("false"))
                 ("v,verbose", "Enable verbose logging", cxxopts::value<bool>()->default_value("false"))
                 ("h,help", "Print usage")
             ;

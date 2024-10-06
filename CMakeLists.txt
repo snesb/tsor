@@ -13,17 +13,17 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-include_directories(include)
+include_directories(include lib/cxxopts/include)
 link_directories(lib)
 
 file(GLOB_RECURSE TSOR_CPPS src/*.cpp)
 add_subdirectory(src/util)
 add_executable(tsor ${TSOR_CPPS})
 
-find_package(cxxopts 3.1 REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# Add Dear ImGui library from submodule
 set(IMGUI_PATH lib/imgui)
 file(GLOB IMGUI_SOURCES
     ${IMGUI_PATH}/*.cpp
