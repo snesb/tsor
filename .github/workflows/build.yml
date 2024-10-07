@@ -120,6 +120,7 @@ jobs:
       run: |
         mkdir -p ${{github.workspace}}/AppDir/usr/share/icons
         cp ${{github.workspace}}/tsor/tsor.svg ${{github.workspace}}/AppDir/usr/share/icons/tsor.svg
+        chmod +x ${{github.workspace}}/AppDir/tsor
         appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
 
     - uses: actions/upload-artifact@v4
