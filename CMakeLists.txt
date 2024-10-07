@@ -14,8 +14,9 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 find_program(CXX_CPPCHECK cppcheck NAMES cppcheck HINTS $ENV{PROGRAMFILES}/cppcheck)
 if(CXX_CPPCHECK)
     list(APPEND CXX_CPPCHECK
-        "--quiet" "--std=c++${CMAKE_CXX_STANDARD}" "--enable=all"
-        "--inline-suppr" "--suppress=missingInclude" "--suppress=missingIncludeSystem" "src"
+        "--quiet" "--std=c++${CMAKE_CXX_STANDARD}" "--enable=all" "--inline-suppr"
+        "--suppress=missingInclude" "--suppress=missingIncludeSystem" "--suppress=unmatchedSuppression"
+        "src"
     )
 
     add_custom_target(check

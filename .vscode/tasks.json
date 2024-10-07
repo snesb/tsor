@@ -5,6 +5,11 @@
             "label": "Run tsor",
             "type": "shell",
             "command": "build/tsor --help"
+        },
+        {
+            "label": "Rebuild tsor",
+            "type": "shell",
+            "command": "cd build && cmake .. && make -j$(nproc) && ./tsor ~/test.ts --gui"
         }
     ]
 }
