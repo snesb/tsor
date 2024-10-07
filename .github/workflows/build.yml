@@ -85,13 +85,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      name: Get recipe
       with:
         sparse-checkout: |
           AppImage.yml
+          icon.svg
         sparse-checkout-cone-mode: false
         path: ${{github.workspace}}/tsor
 
     - uses: actions/checkout@v4
+      name: Get appimage-builder
       with:
         repository: 'AppImageCrafters/appimage-builder'
         ref: '61c8ddde9ef44b85d7444bbe79d80b44a6a5576d'
@@ -103,20 +106,21 @@ jobs:
         name: tsor_ubuntu_focal_amd64
         path: ${{github.workspace}}/AppDir
 
-    - name: Install dependencies
-      run: sudo apt-get -y install fuse patchelf zsync
-
     - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'pip'
-    - run: pip install -r ${{github.workspace}}/appimage-builder/requirements.txt
 
-    - name: Install appimage-builder
-      run: pip install ${{github.workspace}}/appimage-builder
+    - name: Install dependencies
+      run: |
+        sudo apt-get -y install patchelf zsync
+        pip install ${{github.workspace}}/appimage-builder
 
     - name: Build AppImage
-      run: appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
+      run: |
+        mkdir -p ${{github.workspace}}/AppDir/usr/share/icons
+        cp ${{github.workspace}}/tsor/icon.svg ${{github.workspace}}/AppDir/usr/share/icons/tsor.svg
+        appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
 
     - uses: actions/upload-artifact@v4
       name: Upload artifact

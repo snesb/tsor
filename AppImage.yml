@@ -5,6 +5,7 @@ AppDir:
     id: com.snesb.tsor
     name: tsor
     version: latest
+    icon: tsor.svg
     exec: tsor
     exec_args: $@
   apt:
