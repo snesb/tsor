@@ -43,7 +43,9 @@ set(TSOR_SOURCES
 add_subdirectory(src/ts)
 add_subdirectory(src/util)
 add_executable(tsor ${TSOR_SOURCES})
-add_dependencies(tsor check)
+if(CXX_CPPCHECK)
+    add_dependencies(tsor check)
+endif()
 
 # Find dependency packages
 find_package(glfw3 3.3 REQUIRED)
