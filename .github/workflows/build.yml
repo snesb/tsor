@@ -81,6 +81,7 @@ jobs:
 
   build_appimage:
     runs-on: ubuntu-20.04
+    needs: build_ubuntu_focal
 
     steps:
     - uses: actions/checkout@v4
@@ -92,7 +93,7 @@ jobs:
 
     - uses: actions/checkout@v4
       with:
-        repository: 'https://github.com/AppImageCrafters/appimage-builder'
+        repository: 'AppImageCrafters/appimage-builder'
         ref: '61c8ddde9ef44b85d7444bbe79d80b44a6a5576d'
         path: ${{github.workspace}}/appimage-builder
 
