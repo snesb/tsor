@@ -22,7 +22,7 @@ namespace tsor {
             // Print usage info if no args supplied or "input" arg is missing
             if (argc == 1 || args.count("help") || !args.count("input")) {
                 std::cout << options.positional_help("<input>").help() << std::endl;
-                exit(1);
+                exit(0);
             }
 
             return args;
