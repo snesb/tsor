@@ -43,7 +43,7 @@ namespace ts
         bool push(char* bytes, ts::Packet& p);
 
         /**
-         * Returns true if PID is in filter list
+         * Returns true if PID is in filter list (or if filter list is empty)
          */
         bool is_filtered(uint pid);
 

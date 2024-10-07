@@ -53,7 +53,7 @@ namespace ts
 
     bool Mux::is_filtered(uint pid)
     {
-        return !pid_filter.empty() && std::find(pid_filter.begin(), pid_filter.end(), pid) != pid_filter.end();
+        return pid_filter.empty() || (!pid_filter.empty() && std::find(pid_filter.begin(), pid_filter.end(), pid) != pid_filter.end());
     }
 
     std::string packet_info(Packet& p)
