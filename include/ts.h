@@ -42,6 +42,11 @@ namespace ts
          */
         bool push(char* bytes, ts::Packet& p);
 
+        /**
+         * Returns true if PID is in filter list
+         */
+        bool is_filtered(uint pid);
+
     private:
         /**
          * Unpack 188 byte buffer into Packet struct

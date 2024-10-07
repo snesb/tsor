@@ -48,12 +48,12 @@ namespace ts
         if (p.pid == PID::FILL || p.tei) return false;
 
         // Skip packets not matching PID filter
-        if (!pid_filter.empty())
-            if (std::find(pid_filter.begin(), pid_filter.end(), packet.pid) == pid_filter.end())
-                return;
+        return is_filtered(p.pid);
+    }
 
-        // Build info string if enabled
-        if (info != nullptr) *info = packet_info(&packet);
+    bool Mux::is_filtered(uint pid)
+    {
+        return !pid_filter.empty() && std::find(pid_filter.begin(), pid_filter.end(), pid) != pid_filter.end();
     }
 
     std::string packet_info(Packet& p)
