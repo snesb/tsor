@@ -80,8 +80,8 @@ jobs:
         path: ${{github.workspace}}/build/tsor
 
   build_appimage:
-    runs-on: ubuntu-20.04
-    needs: build_ubuntu_focal
+    runs-on: ubuntu-22.04
+    needs: [build_ubuntu_noble, build_ubuntu_jammy, build_ubuntu_focal]
 
     steps:
     - uses: actions/checkout@v4
@@ -89,7 +89,7 @@ jobs:
       with:
         sparse-checkout: |
           AppImage.yml
-          tsor.svg
+          docs/tsor.svg
         sparse-checkout-cone-mode: false
         path: ${{github.workspace}}/tsor
 
@@ -119,7 +119,7 @@ jobs:
     - name: Build AppImage
       run: |
         mkdir -p ${{github.workspace}}/AppDir/usr/share/icons
-        cp ${{github.workspace}}/tsor/tsor.svg ${{github.workspace}}/AppDir/usr/share/icons/tsor.svg
+        cp ${{github.workspace}}/tsor/docs/tsor.svg ${{github.workspace}}/AppDir/usr/share/icons/tsor.svg
         chmod +x ${{github.workspace}}/AppDir/tsor
         appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
         chmod +x ${{github.workspace}}/tsor-latest-x86_64.AppImage
