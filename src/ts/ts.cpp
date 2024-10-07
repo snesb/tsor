@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstring>
 #include <iomanip>
 #include <stdexcept>
@@ -12,6 +13,8 @@ namespace ts
 
     Packet Mux::unpack_bytes(char* buffer)
     {
+        // Ideally ts::Packet would be a packed struct with bit widths but 
+        // that's not portable so we'll have to put up with masks and bit-shifting
         Packet packet
         {
             static_cast<uint8_t>(buffer[0]),                            // Synchronisation Byte (0x47, "G")
@@ -36,15 +39,20 @@ namespace ts
         // Check sync byte is present
         if (buffer[0] != 0x47)
             throw std::runtime_error("Packet missing sync byte (0x47)");
-        
+
         // Unpack packet bytes
         Packet packet = unpack_bytes(buffer);
 
-        // Build info string if enabled
-        if (info != nullptr) *info = packet_info(&packet);
-
         // Skip null or corrupt packets
         if (packet.pid == PID::FILL || packet.tei) return;
+
+        // Skip packets not matching PID filter
+        if (!pid_filter.empty())
+            if (std::find(pid_filter.begin(), pid_filter.end(), packet.pid) == pid_filter.end())
+                return;
+
+        // Build info string if enabled
+        if (info != nullptr) *info = packet_info(&packet);
     }
 
     std::string packet_info(Packet* p)

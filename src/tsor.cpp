@@ -20,7 +20,21 @@ namespace tsor
         char buffer[188];           // Input packet buffer
         std::string info;           // Verbose info string
 
+        // Parse PID filter into vector
+        if (args.count("filter"))
+            mux.pid_filter = parse_filter(&args["filter"], args["verbose"].as<bool>());
+
+        // Print PID filter info
+        if (mux.pid_filter.size() != 0)
+        {
+            std::cout << "Filtering all PIDs except:";
+            for (auto pid : mux.pid_filter)
+                std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
+            std::cout << std::endl;
+        }
+
         // Loop through packets in input file
+        std::cout << std::endl;
         while (!ifs->eof())
         {
             // Read bytes into buffer
@@ -28,7 +42,7 @@ namespace tsor
             {
                 if (errno == 0 || errno == 11) // EOF or Resource Temporarily Unavailable
                 {
-                    std::cout << std::endl << "Reached end of file \"" << input << "\"" << std::endl;
+                    std::cout << std::endl << input << ": Reached end of file" << std::endl;
                 }
                 else
                 {
@@ -49,25 +63,20 @@ namespace tsor
             }
 
             // Update user interface
-            if (args.count("gui"))
-                if (gui::window != nullptr)
-                    gui::update();
+            if (args.count("gui") && gui::window != nullptr)
+                gui::update();
         }
         ifs->close();
 
+        //TODO: Decouple file and GUI loops (std::thread?)
+
         // Keep GUI running after file EOF
-        if (args.count("gui"))
+        if (args.count("gui") && gui::window != nullptr)
         {
-            if (gui::window != nullptr)
-            {
-                // Enable vertical sync (reduce CPU usage) after EOF
-                glfwSwapInterval(1);
-        
-                while (!glfwWindowShouldClose(gui::window))
-                    gui::update();
-                
-                gui::cleanup();
-            }
+            // Enable vertical sync (reduce CPU usage) after EOF
+            glfwSwapInterval(1);
+            while (!glfwWindowShouldClose(gui::window)) gui::update();
+            gui::cleanup();
         }
 
         return 0;
@@ -80,11 +89,12 @@ namespace tsor
 int main(int argc, char* argv[])
 {
     printf("%s v%s - %s\n", PROJECT_NAME, PROJECT_VERSION, PROJECT_DESCRIPTION);
-    printf("Built at %s (commit %s)\n\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
+    printf("Built at %s (commit %s)\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
 
     // Parse command line arguments
     cxxopts::ParseResult args = tsor::parse_args(argc, argv);
     std::string input = args["input"].as<std::string>();
+    std::cout << std::endl;
 
     // Check input file extension
     if (input.substr(input.length() - 3) != ".ts")

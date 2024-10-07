@@ -2,6 +2,7 @@
 #include <map>
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include "pid.h"
 
@@ -34,6 +35,7 @@ namespace ts
 
         uint8_t tsid;                               // Transport Stream ID
         std::map<uint,unsigned long> pid_count;     // Number of packets per PID
+        std::vector<uint> pid_filter;               // List of PIDs to process
 
         /**
          * Process new packet
