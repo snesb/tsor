@@ -15,7 +15,7 @@ find_program(CXX_CPPCHECK cppcheck NAMES cppcheck HINTS $ENV{PROGRAMFILES}/cppch
 if(CXX_CPPCHECK)
     list(APPEND CXX_CPPCHECK
         "--quiet" "--std=c++${CMAKE_CXX_STANDARD}" "--enable=all"
-        "--inline-suppr" "--suppress=missingInclude" "src"
+        "--inline-suppr" "--suppress=missingInclude" "--suppress=missingIncludeSystem" "src"
     )
 
     add_custom_target(check
