@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "gui.h"
+#include "ts.h"
 #include "../util/version.h"
 
 namespace tsor::gui
@@ -29,7 +30,7 @@ namespace tsor::gui
     /**
      * Draw UI elements
      */
-    static void draw(const ImGuiViewport* viewport)
+    static void draw(const ImGuiViewport* viewport, ts::Mux& mux)
     {
         // Layout Table
         ImGui::BeginTable("Layout Table", 2);
@@ -38,8 +39,20 @@ namespace tsor::gui
         ImGui::SeparatorText("PID List");
         {
             ImGui::BeginChild("PID List Window", ImVec2(200, 0), ImGuiChildFlags_Borders, ImGuiWindowFlags_None);
-                for (int i = 0; i < 100; i++)
-                    ImGui::Text("0x%04X", i);
+            for (auto pid : mux.pid_count)
+            {
+                // Change text colour of PIDs not in filter
+                if (!mux.is_filtered(pid.first))
+                    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
+
+                // Show table names for common PIDs
+                if (ts::PIDMap.find(pid.first) != ts::PIDMap.end())
+                    ImGui::Text("0x%04X (%s): %ld", pid.first, ts::PIDMap[pid.first], pid.second);
+                else
+                    ImGui::Text("0x%04X: %ld", pid.first, pid.second);
+
+                if (!mux.is_filtered(pid.first)) ImGui::PopStyleColor();
+            }
             ImGui::EndChild();
         }
 
@@ -48,7 +61,7 @@ namespace tsor::gui
         ImGui::ShowDemoWindow();
     }
 
-    void update()
+    void update(ts::Mux& mux)
     {
         // Handle window events
         glfwPollEvents();
@@ -79,7 +92,7 @@ namespace tsor::gui
         ImGui::Begin(PROJECT_NAME, NULL, parent_window_flags);
 
         // Draw UI elements
-        draw(viewport);
+        draw(viewport, mux);
 
         ImGui::End(); // Main Window
 
@@ -130,7 +143,7 @@ namespace tsor::gui
         glfwWindowHintString(GLFW_X11_CLASS_NAME, PROJECT_NAME);
         glfwWindowHintString(GLFW_X11_INSTANCE_NAME, PROJECT_NAME);
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(0); // Disable vertical sync
+        glfwSwapInterval(1); // Enable vertical sync
 
         // Position window on screen
         const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());

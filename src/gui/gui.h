@@ -1,9 +1,11 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
+#include "ts.h"
 
 namespace tsor::gui
 {
@@ -13,7 +15,7 @@ namespace tsor::gui
     /**
      * Update GUI frame buffer
      */
-    void update();
+    void update(ts::Mux& mux);
 
     /**
      * Setup ImGui and GLFW/OpenGL
