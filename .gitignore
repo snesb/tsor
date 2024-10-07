@@ -36,3 +36,5 @@ build/*
 
 # Preprocessed version header
 src/util/version.h
+
+.vscode/settings.json
