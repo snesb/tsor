@@ -122,6 +122,7 @@ jobs:
         cp ${{github.workspace}}/tsor/tsor.svg ${{github.workspace}}/AppDir/usr/share/icons/tsor.svg
         chmod +x ${{github.workspace}}/AppDir/tsor
         appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
+        chmod +x ${{github.workspace}}/tsor-latest-x86_64.AppImage
 
     - uses: actions/upload-artifact@v4
       name: Upload artifact

@@ -3,11 +3,12 @@
 #include <vector>
 
 #include "options.h"
+#include "version.h"
 
 namespace tsor {
     cxxopts::ParseResult parse_args(int argc, char* argv[]) {
         try {
-            cxxopts::Options options(argv[0]);
+            cxxopts::Options options(PROJECT_NAME);
             options.add_options()
                 ("i,input", "Input file", cxxopts::value<std::string>())
                 ("filter", "List of PIDs to process (e.g. 11,1210,2A0,3FF)", cxxopts::value<std::string>())
