@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -32,6 +33,11 @@ namespace tsor
                 std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
             std::cout << std::endl;
         }
+
+        // Get start timestamp
+        std::chrono::milliseconds start_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
         std::cout << std::endl;
 
         // Loop through packets in input file
@@ -41,10 +47,19 @@ namespace tsor
             // Read bytes into buffer
             if(!ifs->read(buffer, sizeof(buffer)))
             {
-                if (errno == 0 || errno == 2 || errno == 11) //FIXME: This should only be 0 (EOF)
-                    std::cout << std::endl << input << ": Reached end of file" << std::endl;
+                if (errno == 0 || errno == 2 || errno == 11)    //FIXME: This should only be 0 (EOF)
+                {
+                    // Get processing duration in milliseconds
+                    std::chrono::milliseconds end_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::system_clock::now().time_since_epoch()
+                    );
+                    std::cout << std::endl << input << ": Reached end of file (";
+                    std::cout << (end_ms.count() - start_ms.count()) << " ms)" << std::endl;
+                }
                 else
+                {
                     std::cout << input << ": " << std::strerror(errno) << " (" << std::dec << errno << ")"<< std::endl;
+                }
                 break;
             }
 
