@@ -26,12 +26,12 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-    
+
     - uses: actions/upload-artifact@v4
       name: Upload artifact
       with:
         name: tsor_ubuntu_noble_amd64
-        path: /home/runner/work/tsor/tsor/build/tsor
+        path: ${{github.workspace}}/build/tsor
 
   build_ubuntu_jammy:
     runs-on: ubuntu-22.04
@@ -49,12 +49,12 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-    
+
     - uses: actions/upload-artifact@v4
       name: Upload artifact
       with:
         name: tsor_ubuntu_jammy_amd64
-        path: /home/runner/work/tsor/tsor/build/tsor
+        path: ${{github.workspace}}/build/tsor
 
   build_ubuntu_focal:
     runs-on: ubuntu-20.04
@@ -72,9 +72,50 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-    
+
     - uses: actions/upload-artifact@v4
       name: Upload artifact
       with:
         name: tsor_ubuntu_focal_amd64
-        path: /home/runner/work/tsor/tsor/build/tsor
+        path: ${{github.workspace}}/build/tsor
+
+  build_appimage:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          AppImage.yml
+        sparse-checkout-cone-mode: false
+        path: ${{github.workspace}}/tsor
+
+    - uses: actions/checkout@v4
+      with:
+        repository: 'https://github.com/AppImageCrafters/appimage-builder'
+        ref: '61c8ddde9ef44b85d7444bbe79d80b44a6a5576d'
+        path: ${{github.workspace}}/appimage-builder
+
+    - uses: actions/download-artifact@v4
+      name: Download focal build
+      with:
+        name: tsor_ubuntu_focal_amd64
+        path: ${{github.workspace}}/AppDir
+
+    - name: Install dependencies
+      run: sudo apt-get -y install fuse patchelf zsync
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+    - run: pip install -r appimage-builder/requirements.txt
+
+    - name: Build AppImage
+      run: appimage-builder --recipe ${{github.workspace}}/tsor/AppImage.yml
+
+    - uses: actions/upload-artifact@v4
+      name: Upload artifact
+      with:
+        name: tsor-latest-x86_64.AppImage
+        path: ${{github.workspace}}/tsor-latest-x86_64.AppImage
