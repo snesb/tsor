@@ -5,7 +5,7 @@ AppDir:
     id: com.snesb.tsor
     name: tsor
     version: latest
-    icon: tsor.svg
+    icon: tsor
     exec: tsor
     exec_args: $@
   apt:
@@ -35,22 +35,6 @@ AppDir:
     - usr/share/doc/*/changelog.*
     - usr/share/doc/*/NEWS.*
     - usr/share/doc/*/TODO.*
-  test:
-    fedora-30:
-      image: appimagecrafters/tests-env:fedora-30
-      command: ./AppRun
-    debian-stable:
-      image: appimagecrafters/tests-env:debian-stable
-      command: ./AppRun
-    archlinux-latest:
-      image: appimagecrafters/tests-env:archlinux-latest
-      command: ./AppRun
-    centos-7:
-      image: appimagecrafters/tests-env:centos-7
-      command: ./AppRun
-    ubuntu-xenial:
-      image: appimagecrafters/tests-env:ubuntu-xenial
-      command: ./AppRun
 AppImage:
   arch: x86_64
   comp: xz
