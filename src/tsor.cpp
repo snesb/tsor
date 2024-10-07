@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "gui/gui.h"
-#include "ts/ts.h"
+#include "ts.h"
 #include "util/options.h"
 #include "util/version.h"
 

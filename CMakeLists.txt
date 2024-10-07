@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
@@ -24,16 +24,21 @@ endif()
 # Setup tsor project
 project(tsor
     LANGUAGES C CXX
-    VERSION "1.0"
+    VERSION "0.1"
     DESCRIPTION "MPEG Transport Stream Inspector"
 )
-include_directories(lib/cxxopts/include)
+include_directories(include lib/cxxopts/include src/ts)
 link_directories(lib)
 
 # Add tsor source files
-file(GLOB_RECURSE TSOR_CPPS src/*.cpp)
+set(TSOR_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/tsor.cpp
+    ${PROJECT_SOURCE_DIR}/src/gui/gui.cpp
+    ${PROJECT_SOURCE_DIR}/src/util/options.cpp
+)
+add_subdirectory(src/ts)
 add_subdirectory(src/util)
-add_executable(tsor ${TSOR_CPPS})
+add_executable(tsor ${TSOR_SOURCES})
 add_dependencies(tsor check)
 
 # Find dependency packages
@@ -51,4 +56,4 @@ add_library(ImGui STATIC ${IMGUI_SOURCES})
 target_include_directories(ImGui PUBLIC ${IMGUI_PATH} ${IMGUI_PATH}/backends)
 
 # Link tsor
-target_link_libraries(tsor ${CXXOPTS_LIBRARY} OpenGL::GL glfw ImGui)
+target_link_libraries(tsor ts ${CXXOPTS_LIBRARY} OpenGL::GL glfw ImGui)
