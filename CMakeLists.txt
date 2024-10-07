@@ -62,4 +62,4 @@ add_library(ImGui STATIC ${IMGUI_SOURCES})
 target_include_directories(ImGui PUBLIC ${IMGUI_PATH} ${IMGUI_PATH}/backends)
 
 # Link tsor
-target_link_libraries(tsor ts ${CXXOPTS_LIBRARY} OpenGL::GL glfw ImGui)
+target_link_libraries(tsor ts ${CXXOPTS_LIBRARY} OpenGL::GL glfw ImGui dl)
