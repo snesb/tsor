@@ -2,6 +2,8 @@
 
 MPEG Transport Stream Inspector
 
+[![Build with CMake](https://github.com/snesb/tsor/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/snesb/tsor/actions/workflows/build.yml)
+
 ## Building
 ```bash
 # Install deps and get tsor sources
