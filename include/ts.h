@@ -40,7 +40,7 @@ namespace ts
         /**
          * Process new packet
          */
-        void push(char* bytes, std::string* info);
+        bool push(char* bytes, ts::Packet& p);
 
     private:
         /**
@@ -52,5 +52,5 @@ namespace ts
     /**
      * Print packet information
      */
-    std::string packet_info(Packet* p);
+    std::string packet_info(Packet& p);
 } // namespace ts

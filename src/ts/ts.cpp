@@ -34,17 +34,18 @@ namespace ts
         return packet;
     }
 
-    void Mux::push(char* buffer, std::string* info)
+    bool Mux::push(char* buffer, ts::Packet& p)
     {
         // Check sync byte is present
         if (buffer[0] != 0x47)
             throw std::runtime_error("Packet missing sync byte (0x47)");
 
         // Unpack packet bytes
-        Packet packet = unpack_bytes(buffer);
+        p = unpack_bytes(buffer);
+        pid_count[p.pid]++;
 
         // Skip null or corrupt packets
-        if (packet.pid == PID::FILL || packet.tei) return;
+        if (p.pid == PID::FILL || p.tei) return false;
 
         // Skip packets not matching PID filter
         if (!pid_filter.empty())
@@ -55,30 +56,30 @@ namespace ts
         if (info != nullptr) *info = packet_info(&packet);
     }
 
-    std::string packet_info(Packet* p)
+    std::string packet_info(Packet& p)
     {
         std::stringstream s;
 
         // Continuity Counter
-        s << std::uppercase << std::hex << p->cont << " ";
+        s << std::uppercase << std::hex << p.cont << " ";
 
         // Packet Identifier
-        s << "0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << p->pid << " ";
-        if (PIDMap.find(p->pid) != PIDMap.end())
-            s << std::setfill(' ') << std::setw(8) << std::left << PIDMap[p->pid];
+        s << "0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << p.pid << " ";
+        if (PIDMap.find(p.pid) != PIDMap.end())
+            s << std::setfill(' ') << std::setw(8) << std::left << PIDMap[p.pid];
         else
             s << std::setfill(' ') << std::setw(8) << " ";
 
         // Packet Flags
-        s << (p->tei ? "TEI " : "");
-        s << (p->pusi ? "PUSI " : "" );
-        s << (p->pri ? "PRI" : "");
+        s << (p.tei ? "TEI " : "");
+        s << (p.pusi ? "PUSI " : "" );
+        s << (p.pri ? "PRI" : "");
 
         // Transport Scrambling Control
-        if (p->tsc == 2 || p->tsc == 3) s << "TSC ";
+        if (p.tsc == 2 || p.tsc == 3) s << "TSC ";
 
         // Adaptation Field Control
-        if (p->afc == 2 || p->afc == 3) s << "AFC ";
+        if (p.afc == 2 || p.afc == 3) s << "AFC ";
 
         return s.str();
     }

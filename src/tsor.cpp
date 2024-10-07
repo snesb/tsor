@@ -32,50 +32,39 @@ namespace tsor
                 std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
             std::cout << std::endl;
         }
+        std::cout << std::endl;
 
         // Loop through packets in input file
-        std::cout << std::endl;
-        while (!ifs->eof())
+        ts::Packet packet;
+        while (!ifs->eof() && !ifs->fail())
         {
             // Read bytes into buffer
             if(!ifs->read(buffer, sizeof(buffer)))
             {
-                if (errno == 0 || errno == 11) // EOF or Resource Temporarily Unavailable
-                {
+                if (errno == 0 || errno == 2 || errno == 11) //FIXME: This should only be 0 (EOF)
                     std::cout << std::endl << input << ": Reached end of file" << std::endl;
-                }
                 else
-                {
                     std::cout << input << ": " << std::strerror(errno) << " (" << std::dec << errno << ")"<< std::endl;
-                }
                 break;
             }
 
             // Push packet bytes into mux
             try
             {
-                mux.push(buffer, verbose ? &info : nullptr);
-                if (verbose) std::cout << info << std::endl;
+                if (mux.push(buffer, packet) && verbose)
+                    std::cout << ts::packet_info(packet) << std::endl;
             }
             catch (const std::runtime_error& e)
             {
                 if (verbose) std::cout << e.what() << std::endl;
             }
-
-            // Update user interface
-            if (args.count("gui") && gui::window != nullptr)
-                gui::update();
         }
         ifs->close();
 
-        //TODO: Decouple file and GUI loops (std::thread?)
-
-        // Keep GUI running after file EOF
+        // Start GUI after EOF
         if (args.count("gui") && gui::window != nullptr)
         {
-            // Enable vertical sync (reduce CPU usage) after EOF
-            glfwSwapInterval(1);
-            while (!glfwWindowShouldClose(gui::window)) gui::update();
+            while (!glfwWindowShouldClose(gui::window)) gui::update(mux);
             gui::cleanup();
         }
 
