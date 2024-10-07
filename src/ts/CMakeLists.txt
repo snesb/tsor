@@ -14,8 +14,14 @@ project(ts
 set(TS_SOURCES
     ${PROJECT_SOURCE_DIR}/ts.cpp
 )
-add_library(ts STATIC ${TS_SOURCES})
-target_include_directories(ts PRIVATE ../../include .)
+add_library(ts ${TS_SOURCES})
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 set_target_properties(ts PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
