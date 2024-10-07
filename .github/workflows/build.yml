@@ -110,7 +110,7 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'pip'
-    - run: pip install -r appimage-builder/requirements.txt
+    - run: pip install -r ${{github.workspace}}/appimage-builder/requirements.txt
 
     - name: Install appimage-builder
       run: pip install ${{github.workspace}}/appimage-builder

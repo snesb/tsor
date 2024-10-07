@@ -4,7 +4,6 @@ AppDir:
   app_info:
     id: com.snesb.tsor
     name: tsor
-    icon: application-running
     version: latest
     exec: tsor
     exec_args: $@
