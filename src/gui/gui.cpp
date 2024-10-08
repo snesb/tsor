@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 
+#include "font/Inter.h"
 #include "gui.h"
 #include "ts.h"
 #include "../util/version.h"
@@ -161,6 +162,8 @@ namespace tsor::gui
         io = &ImGui::GetIO(); (void)io;
         io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         ImGui::StyleColorsDark();
+        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterRegular_compressed_data, 220332, 16);
+        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterBold_compressed_data, 226425, 14);
         tsor::gui::verbose = verbose;
 
         // Setup platform/renderer backends
