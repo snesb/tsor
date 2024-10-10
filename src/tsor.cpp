@@ -77,8 +77,11 @@ namespace tsor
         ifs->close();
 
         // Start GUI after EOF
-        if (args.count("gui") && gui::window != nullptr)
+        if (args.count("gui"))
         {
+            if(!tsor::gui::setup(1280, 720, args["verbose"].as<bool>()))
+                std::cout << "Failed to configure GUI" << std::endl;
+            
             while (!glfwWindowShouldClose(gui::window)) gui::update(mux);
             gui::cleanup();
         }
@@ -126,11 +129,6 @@ int main(int argc, char* argv[])
         ifs.close();
         return 1;
     }
-
-    // Setup GUI
-    if (args.count("gui"))
-        if(!tsor::gui::setup(1280, 720, args["verbose"].as<bool>()))
-            std::cout << "Failed to configure GUI" << std::endl;
 
     std::cout << "Reading packets from \"" << input << "\" (" << std::dec << size << " bytes)" << std::endl;
     return tsor::run(args, input, &ifs);

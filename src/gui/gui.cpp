@@ -33,13 +33,31 @@ namespace tsor::gui
      */
     static void draw(const ImGuiViewport* viewport, ts::Mux& mux)
     {
-        // Layout Table
-        ImGui::BeginTable("Layout Table", 2);
+        // Program List
+        {
+            ImGui::BeginChild("Programs",
+                ImVec2(
+                    ImGui::GetContentRegionAvail().x * 0.2f,
+                    ImGui::GetContentRegionAvail().y * 0.5f
+                ),
+                ImGuiChildFlags_Borders, child_window_flags
+            );
+
+            ImGui::Text("PROGRAMS");
+
+            ImGui::EndChild();
+        }
 
         // Packet Identifier List
-        ImGui::SeparatorText("PID List");
         {
-            ImGui::BeginChild("PID List Window", ImVec2(200, 0), ImGuiChildFlags_Borders, ImGuiWindowFlags_None);
+            ImGui::BeginChild("PID List",
+                ImVec2(
+                    ImGui::GetContentRegionAvail().x * 0.2f,
+                    ImGui::GetContentRegionAvail().y
+                ),
+                ImGuiChildFlags_Borders, child_window_flags
+            );
+
             for (auto pid : mux.pid_count)
             {
                 // Change text colour of PIDs not in filter
@@ -57,9 +75,7 @@ namespace tsor::gui
             ImGui::EndChild();
         }
 
-        ImGui::EndTable();
-
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
     }
 
     void update(ts::Mux& mux)
@@ -162,8 +178,8 @@ namespace tsor::gui
         io = &ImGui::GetIO(); (void)io;
         io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         ImGui::StyleColorsDark();
-        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterRegular_compressed_data, 220332, 16);
-        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterBold_compressed_data, 226425, 14);
+        //io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterRegular_compressed_data, 220332, 16);
+        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterBold_compressed_data, 226425, 16);
         tsor::gui::verbose = verbose;
 
         // Setup platform/renderer backends
