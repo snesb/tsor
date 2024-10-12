@@ -79,7 +79,7 @@ namespace tsor
         // Start GUI after EOF
         if (args.count("gui"))
         {
-            if(!tsor::gui::setup(1280, 720, args["verbose"].as<bool>()))
+            if(!tsor::gui::setup(1400, 800, args["verbose"].as<bool>()))
                 std::cout << "Failed to configure GUI" << std::endl;
             
             while (!glfwWindowShouldClose(gui::window)) gui::update(mux);

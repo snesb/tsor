@@ -13,6 +13,7 @@ namespace tsor::gui
 
     static bool verbose;
     static std::vector<float> fps(100, 0);
+
     static const ImGuiWindowFlags parent_window_flags = 
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoScrollbar |
@@ -33,6 +34,11 @@ namespace tsor::gui
         ImGuiTableFlags_Borders |
         ImGuiTableFlags_NoSavedSettings |
         ImGuiTableFlags_Resizable;
+    
+    static const ImGuiTreeNodeFlags tree_node_flags =
+        ImGuiTreeNodeFlags_OpenOnArrow |
+        ImGuiTreeNodeFlags_OpenOnDoubleClick |
+        ImGuiTreeNodeFlags_SpanAvailWidth;
 
     /**
      * Draw UI elements
@@ -49,7 +55,10 @@ namespace tsor::gui
                 ImGuiChildFlags_Borders, child_window_flags
             );
 
-            ImGui::Text("PROGRAMS");
+            for (int i = 0; i < 6; i++)
+            {
+                ImGui::TreeNodeEx((void*)(intptr_t)i, tree_node_flags, "Program %i", i);
+            }
 
             ImGui::EndChild();
         }
