@@ -28,6 +28,12 @@ namespace tsor::gui
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoCollapse;
 
+    static const ImGuiTableFlags table_flags =
+        ImGuiTableFlags_RowBg |
+        ImGuiTableFlags_Borders |
+        ImGuiTableFlags_NoSavedSettings |
+        ImGuiTableFlags_Resizable;
+
     /**
      * Draw UI elements
      */
@@ -48,34 +54,44 @@ namespace tsor::gui
             ImGui::EndChild();
         }
 
-        // Packet Identifier List
+        // Packet Identifier Table
         {
-            ImGui::BeginChild("PID List",
+            ImGui::BeginTable("PID Table", 2, table_flags,
                 ImVec2(
                     ImGui::GetContentRegionAvail().x * 0.2f,
                     ImGui::GetContentRegionAvail().y
-                ),
-                ImGuiChildFlags_Borders, child_window_flags
+                )
             );
+            ImGui::TableSetupColumn("PID");
+            ImGui::TableSetupColumn("Count");
+            ImGui::TableHeadersRow();
 
             for (auto pid : mux.pid_count)
             {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
                 // Change text colour of PIDs not in filter
                 if (!mux.is_filtered(pid.first))
                     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
 
                 // Show table names for common PIDs
                 if (ts::PIDMap.find(pid.first) != ts::PIDMap.end())
-                    ImGui::Text("0x%04X (%s): %ld", pid.first, ts::PIDMap[pid.first], pid.second);
+                    ImGui::Text("0x%04X (%s)", pid.first, ts::PIDMap[pid.first]);
                 else
-                    ImGui::Text("0x%04X: %ld", pid.first, pid.second);
+                    ImGui::Text("0x%04X", pid.first);
+
+                // Packets for this PID
+                ImGui::TableNextColumn();
+                ImGui::Text("%ld", pid.second);
 
                 if (!mux.is_filtered(pid.first)) ImGui::PopStyleColor();
             }
-            ImGui::EndChild();
+
+            ImGui::EndTable();
         }
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
     }
 
     void update(ts::Mux& mux)
@@ -178,8 +194,8 @@ namespace tsor::gui
         io = &ImGui::GetIO(); (void)io;
         io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         ImGui::StyleColorsDark();
-        //io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterRegular_compressed_data, 220332, 16);
-        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterBold_compressed_data, 226425, 16);
+        io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterRegular_compressed_data, 220332, 15);
+        //io->Fonts->AddFontFromMemoryCompressedTTF((void*)InterBold_compressed_data, 226425, 15);
         tsor::gui::verbose = verbose;
 
         // Setup platform/renderer backends
