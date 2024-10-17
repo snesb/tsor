@@ -17,15 +17,15 @@ namespace ts
         // that's not portable so we'll have to put up with masks and bit-shifting
         Packet packet
         {
-            static_cast<uint8_t>(buffer[0]),                            // Synchronisation Byte (0x47, "G")
-            static_cast<bool>((buffer[1] & 0x80) >> 7),                 // Transport Error Indicator Flag
-            static_cast<bool>((buffer[1] & 0x40) >> 6),                 // Payload Unit Start Indicator Flag
-            static_cast<bool>((buffer[1] & 0x20) >> 5),                 // Transport Priority Flag
-            static_cast<uint>(((buffer[1] << 8) | buffer[2]) & 0x1FFF), // Packet Identifier
-            static_cast<uint>((buffer[3] & 0xC0) >> 6),                 // Transport Scrambling Control
-            static_cast<uint>((buffer[3] & 0x30) >> 4),                 // Adaptation Field Control
-            static_cast<uint>((buffer[3] & 0x0F)),                      // Continuity Counter
-            ""
+            static_cast<uint8_t>(buffer[0]),                                // Synchronisation Byte (0x47, "G")
+            static_cast<bool>((buffer[1] & 0x80) >> 7),                     // Transport Error Indicator Flag
+            static_cast<bool>((buffer[1] & 0x40) >> 6),                     // Payload Unit Start Indicator Flag
+            static_cast<bool>((buffer[1] & 0x20) >> 5),                     // Transport Priority Flag
+            static_cast<uint16_t>(((buffer[1] << 8) | buffer[2]) & 0x1FFF), // Packet Identifier
+            static_cast<uint>((buffer[3] & 0xC0) >> 6),                     // Transport Scrambling Control
+            static_cast<uint>((buffer[3] & 0x30) >> 4),                     // Adaptation Field Control
+            static_cast<uint>((buffer[3] & 0x0F)),                          // Continuity Counter
+            ""                                                              // Payload
         };
 
         // Copy payload into struct memory
@@ -51,7 +51,7 @@ namespace ts
         return is_filtered(p.pid);
     }
 
-    bool Mux::is_filtered(uint pid)
+    bool Mux::is_filtered(uint16_t pid)
     {
         return pid_filter.empty() || (!pid_filter.empty() && std::find(pid_filter.begin(), pid_filter.end(), pid) != pid_filter.end());
     }

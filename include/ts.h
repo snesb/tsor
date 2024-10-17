@@ -13,15 +13,15 @@ namespace ts
      */
     struct Packet
     {
-        uint8_t sync;       // Synchronisation Byte (0x47, "G")
-        bool    tei;        // Transport Error Indicator Flag
-        bool    pusi;       // Payload Unit Start Indicator Flag
-        bool    pri;        // Transport Priority Flag
-        uint    pid;        // Packet Identifier
-        uint    tsc;        // Transport Scrambling Control
-        uint    afc;        // Adaptation Field Control
-        uint    cont;       // Continuity Counter
-        uint8_t data[184];  // Payload data
+        uint8_t     sync;       // Synchronisation Byte (0x47, "G")
+        bool        tei;        // Transport Error Indicator Flag
+        bool        pusi;       // Payload Unit Start Indicator Flag
+        bool        pri;        // Transport Priority Flag
+        uint16_t    pid;        // Packet Identifier
+        uint        tsc;        // Transport Scrambling Control
+        uint        afc;        // Adaptation Field Control
+        uint        cont;       // Continuity Counter
+        uint8_t     data[184];  // Payload
     };
 
     /**
@@ -34,8 +34,8 @@ namespace ts
         ~Mux();
 
         uint8_t tsid;                               // Transport Stream ID
-        std::map<uint,unsigned long> pid_count;     // Number of packets per PID
-        std::vector<uint> pid_filter;               // List of PIDs to process
+        std::map<uint16_t,unsigned long> pid_count;     // Number of packets per PID
+        std::vector<uint16_t> pid_filter;               // List of PIDs to process
 
         /**
          * Process new packet
@@ -45,7 +45,7 @@ namespace ts
         /**
          * Returns true if PID is in filter list (or if filter list is empty)
          */
-        bool is_filtered(uint pid);
+        bool is_filtered(uint16_t pid);
 
     private:
         /**

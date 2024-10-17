@@ -7,7 +7,7 @@ namespace ts
     /**
      * Map standard table names to PID value
      */
-    enum PID : uint
+    enum PID : uint16_t
     {
         PAT  = 0x0000,              // Program Association Table
         CAT  = 0x0001,              // Conditional Access Table
@@ -32,7 +32,7 @@ namespace ts
     /**
      * Map standard PID values to abbreviated table name
      */
-    static std::map<uint,const char*> PIDMap = 
+    static std::map<uint16_t,const char*> PIDMap = 
     {
         {PID::PAT,  "PAT"},         // Program Association Table
         {PID::CAT,  "CAT"},         // Conditional Access Table
