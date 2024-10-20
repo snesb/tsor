@@ -1,4 +1,6 @@
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -33,7 +35,7 @@ namespace tsor {
         }
     }
 
-    std::vector<uint16_t> parse_filter(const cxxopts::OptionValue* filter, bool verbose) {
+    std::vector<uint16_t> parse_pid_filter(const cxxopts::OptionValue* filter, bool verbose) {
         auto list = filter->as<std::string>();
         std::vector<uint16_t> pids = {};
         size_t start = 0, end;
@@ -47,17 +49,17 @@ namespace tsor {
             start = end + 1;
 
             // Convert hex string to int and add to vector
-            if (!add_filter_pid(&pids, token) && verbose) std::cerr << "Filter PID \"" << token << "\" is invalid" << std::endl;
+            if (!add_pid_filter(&pids, token) && verbose) std::cerr << "Filter PID \"" << token << "\" is invalid" << std::endl;
         }
 
         // Handle last element in list
         token = list.substr(start);
-        if (!add_filter_pid(&pids, token) && verbose) std::cerr << "Filter PID \"" << token << "\" is invalid" << std::endl;
+        if (!add_pid_filter(&pids, token) && verbose) std::cerr << "Filter PID \"" << token << "\" is invalid" << std::endl;
 
         return pids;
     }
 
-    bool add_filter_pid(std::vector<uint16_t>* v, std::string s) {
+    bool add_pid_filter(std::vector<uint16_t>* v, std::string s) {
         // Basic input validation
         if (s.length() == 0 || s.find(" ", 0) != std::string::npos) return false;
 
@@ -72,5 +74,14 @@ namespace tsor {
         catch (...) { return false; }   // std::out_of_range, std::invalid_argument
 
         return true;
+    }
+
+    std::string print_pid_filter(const std::vector<uint16_t>& pids)
+    {
+        std::stringstream s;
+        for (uint16_t pid : pids)
+            s << ", 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
+
+        return s.str().substr(2);
     }
 } // namespace tsor
