@@ -1,65 +1,77 @@
-#include <algorithm>
-#include <chrono>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
 
 #include "gui/gui.h"
 #include "ts.h"
 #include "util/options.h"
+#include "util/time.h"
 #include "util/version.h"
 
 namespace tsor
 {
+    bool verbose;                   // Verbose logging flag
+    static std::ifstream file;      // Input file stream
+    ts::Mux mux;                    // MPEG Transport Stream
+
     /**
      * Main application loop
      */
-    int run(cxxopts::ParseResult args, std::string input, std::ifstream* ifs)
+    int run(cxxopts::ParseResult& args)
     {
-        const bool verbose = args["verbose"].as<bool>();
-        ts::Mux mux;                // Transport Stream object
-        char buffer[188];           // Input packet buffer
-        std::string info;           // Verbose info string
+        auto input = args["input"].as<std::string>();
+        verbose = args["verbose"].as<bool>();
 
-        // Parse PID filter into vector
+        // Handle PID filter argument
         if (args.count("filter"))
-            mux.pid_filter = parse_filter(&args["filter"], args["verbose"].as<bool>());
-
-        // Print PID filter info
-        if (mux.pid_filter.size() != 0)
         {
-            std::cout << "Filtering all PIDs except:";
-            for (auto pid : mux.pid_filter)
-                std::cout << " 0x" << std::uppercase << std::setfill('0') << std::setw(4) << std::hex << pid;
-            std::cout << std::endl;
+            mux.pid_filter = parse_pid_filter(&args["filter"], verbose);
+            if (mux.pid_filter.size() != 0)
+                std::cout << "Only processing PIDs " << print_pid_filter(mux.pid_filter) << std::endl;
+        }
+        if (verbose) std::cout << std::endl;
+
+        // Setup GUI
+        if (args.count("gui"))
+        {
+            if(!tsor::gui::setup(1400, 800, verbose))
+                std::cout << "Failed to configure GUI" << std::endl;
+            else
+                // Fast initial render
+                for (int i = 0; i < 4; i++)
+                    gui::update(mux, false);
         }
 
         // Get start timestamp
-        std::chrono::milliseconds start_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()
-        );
-        std::cout << std::endl;
+        int64_t start_time = tsor::get_ms();
 
-        // Loop through packets in input file
         ts::Packet packet;
-        while (!ifs->eof() && !ifs->fail())
+        char buffer[TS_BUFFER_LENGTH];
+        while (!file.eof() && !file.fail())
         {
-            // Read bytes into buffer
-            if(!ifs->read(buffer, sizeof(buffer)))
+            // Update GUI
+            if (tsor::gui::window != nullptr)
             {
-                if (errno == 0 || errno == 2 || errno == 11)    //FIXME: This should only be 0 (EOF)
+                if (glfwWindowShouldClose(gui::window)) break;
+                gui::update(mux, true);
+            }
+
+            // Read bytes into buffer and handle errors
+            if(!file.read(buffer, sizeof(buffer)))
+            {
+                // Handle error codes
+                if (errno == 0)
                 {
-                    // Get processing duration in milliseconds
-                    std::chrono::milliseconds end_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                        std::chrono::system_clock::now().time_since_epoch()
-                    );
-                    std::cout << std::endl << input << ": Reached end of file (";
-                    std::cout << (end_ms.count() - start_ms.count()) << " ms)" << std::endl;
+                    int64_t duration = tsor::get_ms() - start_time;
+                    std::cout << std::endl << input << ": Reached end of file";
+                    if (duration > 0) std::cout << " in " << duration << " ms";
+                    std::cout << std::endl;
                 }
                 else
                 {
-                    std::cout << input << ": " << std::strerror(errno) << " (" << std::dec << errno << ")"<< std::endl;
+                    std::cout << input << ": " << std::strerror(errno);
+                    std::cout << " (ERRNO " << std::dec << errno << ")"<< std::endl;
                 }
+
                 break;
             }
 
@@ -74,15 +86,13 @@ namespace tsor
                 if (verbose) std::cout << e.what() << std::endl;
             }
         }
-        ifs->close();
+        file.close();
 
-        // Start GUI after EOF
-        if (args.count("gui"))
+        // Keep GUI running
+        if (tsor::gui::window != nullptr)
         {
-            if(!tsor::gui::setup(1400, 800, args["verbose"].as<bool>()))
-                std::cout << "Failed to configure GUI" << std::endl;
-            
-            while (!glfwWindowShouldClose(gui::window)) gui::update(mux);
+            while (!glfwWindowShouldClose(gui::window))
+                gui::update(mux, false);
             gui::cleanup();
         }
 
@@ -96,7 +106,7 @@ namespace tsor
 int main(int argc, char* argv[])
 {
     printf("%s v%s - %s\n", PROJECT_NAME, PROJECT_VERSION, PROJECT_DESCRIPTION);
-    printf("Built at %s (commit %s)\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
+    printf("%s (commit %s)\n", GIT_COMMIT_DATE, GIT_COMMIT_HASH);
 
     // Parse command line arguments
     cxxopts::ParseResult args = tsor::parse_args(argc, argv);
@@ -111,25 +121,25 @@ int main(int argc, char* argv[])
     }
 
     // Open input file (checking if it exists)
-    std::ifstream ifs(input, std::ios::binary);
-    ifs.unsetf(std::ios::skipws);
-    if(!ifs)
+    tsor::file.open(input, std::ios::binary);
+    tsor::file.unsetf(std::ios::skipws);
+    if(!tsor::file)
     {
         std::cout << input << ": " << std::strerror(errno) << std::endl;
         return 1;
     }
 
     // Check file is not empty
-    ifs.seekg(0, std::ios::end);
-    std::streampos size = ifs.tellg();
-    ifs.seekg(0, std::ios::beg);
+    tsor::file.seekg(0, std::ios::end);
+    std::streampos size = tsor::file.tellg();
+    tsor::file.seekg(0, std::ios::beg);
     if(size == 0)
     {
         std::cout << input << ": File is empty" << std::endl;
-        ifs.close();
+        tsor::file.close();
         return 1;
     }
 
-    std::cout << "Reading packets from \"" << input << "\" (" << std::dec << size << " bytes)" << std::endl;
-    return tsor::run(args, input, &ifs);
+    std::cout << input << ": Reading packets from file" << std::endl;
+    return tsor::run(args);
 }

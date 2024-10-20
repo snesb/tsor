@@ -40,6 +40,7 @@ set(TSOR_SOURCES
     ${PROJECT_SOURCE_DIR}/src/tsor.cpp
     ${PROJECT_SOURCE_DIR}/src/gui/gui.cpp
     ${PROJECT_SOURCE_DIR}/src/util/options.cpp
+    ${PROJECT_SOURCE_DIR}/src/util/time.cpp
 )
 add_subdirectory(src/ts)
 add_subdirectory(src/util)

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "pid.h"
+#define TS_BUFFER_LENGTH 188
 
 namespace ts
 {
