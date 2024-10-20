@@ -15,7 +15,7 @@ namespace tsor::gui
     /**
      * Update GUI frame buffer
      */
-    void update(ts::Mux& mux);
+    void update(ts::Mux& mux, bool bail);
 
     /**
      * Setup ImGui and GLFW/OpenGL

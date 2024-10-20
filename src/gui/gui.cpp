@@ -13,6 +13,7 @@ namespace tsor::gui
 
     static bool verbose;
     static std::vector<float> fps(100, 0);
+    float frame_timer = 0.0f;
 
     static const ImGuiWindowFlags parent_window_flags = 
         ImGuiWindowFlags_NoTitleBar |
@@ -103,7 +104,7 @@ namespace tsor::gui
         ImGui::ShowDemoWindow();
     }
 
-    void update(ts::Mux& mux)
+    void update(ts::Mux& mux, bool bail)
     {
         // Handle window events
         glfwPollEvents();
@@ -112,6 +113,13 @@ namespace tsor::gui
             ImGui_ImplGlfw_Sleep(10);
             return;
         }
+
+        // Early out if not ready for update
+        //FIXME: I know this is bad, I'm not dealing with threads yet
+        if (glfwGetTime() - frame_timer < 1.0f && bail)
+            return;
+        else
+            frame_timer = glfwGetTime();
 
         // Start new frame
         ImGui_ImplOpenGL3_NewFrame();
